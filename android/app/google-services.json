@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "170262025941",
+    "firebase_url": "https://monitor-backend.firebaseio.com",
+    "project_id": "monitor-backend",
+    "storage_bucket": "monitor-backend.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170262025941:android:05d148ca4180ae2bd5745c",
+        "android_client_info": {
+          "package_name": "com.boha.fieldmonitor3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "170262025941-nfqvou14smhd659g4f4g6oqlalfjsge7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.boha.fieldmonitor3",
+            "certificate_hash": "ed02ddd0e7e0820a41307a8872c95032d8f8c897"
+          }
+        },
+        {
+          "client_id": "170262025941-hlitt882qagpgqajf2jt5knbd8h3b55u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTnEp_iXbyCsmsslejJTgEW0elUb-1u08"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "170262025941-hlitt882qagpgqajf2jt5knbd8h3b55u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

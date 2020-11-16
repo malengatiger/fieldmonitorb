@@ -68,6 +68,9 @@ class _MediaHouseState extends State<MediaHouse>
       });
       imageFile = File(result);
       var thumbnailFile = await getThumbnail(imageFile);
+      setState(() {
+        isUploading = true;
+      });
       storageBloc.uploadPhotoOrVideo(
           listener: this,
           file: imageFile,
@@ -91,6 +94,9 @@ class _MediaHouseState extends State<MediaHouse>
       videoFile = File(result);
       var len = await videoFile.length();
       pp('Back from the BadLands: 💜 💜 💜 💜 video file length: 🍏 🍏 🍏 $len bytes 🍏 🍏 🍏');
+      setState(() {
+        isUploading = true;
+      });
       var thumbnailFile = await getVideoThumbnail(imageFile);
       storageBloc.uploadPhotoOrVideo(
           listener: this,
@@ -128,22 +134,29 @@ class _MediaHouseState extends State<MediaHouse>
                     child: Column(
                       children: [
                         isUploading
-                            ? Row(
-                                children: [
-                                  Text(
-                                    '$bytesTransferred',
-                                    style: Styles.purpleTiny,
-                                  ),
-                                  SizedBox(
-                                    width: 12,
-                                  ),
-                                  Text('of'),
-                                  SizedBox(
-                                    width: 12,
-                                  ),
-                                  Text('$totalByteCount',
-                                      style: Styles.blackTiny),
-                                ],
+                            ? Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      '$bytesTransferred',
+                                      style: Styles.blackTiny,
+                                    ),
+                                    SizedBox(
+                                      width: 4,
+                                    ),
+                                    Text('of'),
+                                    SizedBox(
+                                      width: 4,
+                                    ),
+                                    Text('$totalByteCount',
+                                        style: Styles.blackTiny),
+                                    SizedBox(
+                                      width: 4,
+                                    ),
+                                    Text('downloaded', style: Styles.blackTiny),
+                                  ],
+                                ),
                               )
                             : Container(),
                         SizedBox(
@@ -257,17 +270,37 @@ class _MediaHouseState extends State<MediaHouse>
   }
 
   Future<File> getVideoThumbnail(File file) async {
-    final path = await VideoThumbnail.thumbnailFile(
-      video: file.path,
-      imageFormat: ImageFormat.JPEG,
-      maxWidth:
-          160, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-      quality: 90,
-    );
-    var thumb = File(path);
-    var len = await thumb.length();
-    pp('....... 💜  .... video thumbnail generated: 😡 ${(len / 1024).toStringAsFixed(1)} KB - 🍏 🍏 🍏 path: $path');
-    return thumb;
+    try {
+      pp('....... 💜  ....getVideoThumbnail, check for spaces in name; path: ${file.path}');
+      final path = await VideoThumbnail.thumbnailFile(
+        video: file.path,
+        imageFormat: ImageFormat.JPEG,
+        maxWidth: 160,
+        // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+        quality: 90,
+      );
+      var thumb = File(path);
+      var len = await thumb.length();
+      pp('....... 💜  .... video thumbnail generated: 😡 ${(len / 1024).toStringAsFixed(1)} KB - 🍏 🍏 🍏 path: $path');
+      return thumb;
+    } catch (e) {
+      //get default image from assets as a file
+      //read and write
+      final filename = 'video3.png';
+      var bytes = await rootBundle.load("assets/video3.png");
+      String dir = (await getApplicationDocumentsDirectory()).path;
+      writeToFile(bytes, '$dir/$filename');
+      var thumb = File('$dir/$filename');
+      var len = await thumb.length();
+      pp('....... 💜  .... video thumbnail from assets: 😡 ${(len / 1024).toStringAsFixed(1)} KB - 🍏 🍏 🍏 ');
+      return thumb;
+    }
+  }
+
+  Future<void> writeToFile(ByteData data, String path) {
+    final buffer = data.buffer;
+    return new File(path).writeAsBytes(
+        buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
   }
 
   var isUploading = false;
@@ -300,6 +333,11 @@ class _MediaHouseState extends State<MediaHouse>
     pp('MediaHouse: 🍏 🍏 🍏 😡 file Upload has been completed 😡 bytesTransferred: ${(bytesTransferred / 1024).toStringAsFixed(1)} KB '
         'of totalByteCount: ${(totalByteCount / 1024).toStringAsFixed(1)} KB');
     pp('MediaHouse: 😡 😡 😡 this file url should be saved somewhere .... 😡😡 $url 😡😡');
+    if (isVideo) {
+      setState(() {
+        isUploading = false;
+      });
+    }
   }
 
   @override

@@ -1,7 +1,8 @@
+import 'package:fieldmonitor3/bloc.dart';
 import 'package:fieldmonitor3/ui/media/media_house.dart';
 import 'package:flutter/material.dart';
-import 'package:monitorlibrary/data/position.dart';
 import 'package:monitorlibrary/data/project.dart';
+import 'package:monitorlibrary/data/project_position.dart';
 import 'package:monitorlibrary/functions.dart';
 import 'package:monitorlibrary/location/loc_bloc.dart';
 import 'package:monitorlibrary/snack.dart';
@@ -28,6 +29,20 @@ class _ProjectDetailMobileState extends State<ProjectDetailMobile>
     super.initState();
     pp(' 🌸 🌸 ProjectDetailMobile: initState  🌸 🌸 '
         '${widget.project.name} ${widget.project.organizationName}');
+    _getProjectPositions();
+  }
+
+  void _getProjectPositions() async {
+    setState(() {
+      isBusy = true;
+    });
+    var positions = await monitorBloc.getProjectPositions(
+        projectId: widget.project.projectId);
+
+    setState(() {
+      widget.project.projectPositions = positions;
+    });
+    _checkProjectDistance();
   }
 
   @override
@@ -45,20 +60,32 @@ class _ProjectDetailMobileState extends State<ProjectDetailMobile>
           title: Text(widget.project.organizationName,
               style: Styles.whiteBoldSmall),
           bottom: PreferredSize(
-            child: Column(
-              children: [
-                Text(widget.project.name, style: Styles.blackBoldSmall),
-                SizedBox(
-                  height: 60,
-                ),
-                Text(
-                  'Shit to do with the project',
-                  style: Styles.whiteSmall,
-                ),
-                SizedBox(
-                  height: 48,
-                ),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  Text(widget.project.name, style: Styles.blackBoldSmall),
+                  SizedBox(
+                    height: 60,
+                  ),
+                  Text(
+                    'The project should be monitored only when the device is within a radius of',
+                    style: Styles.whiteSmall,
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Text('${widget.project.monitorMaxDistanceInMetres}',
+                      style: Styles.blackBoldMedium),
+                  SizedBox(
+                    height: 0,
+                  ),
+                  Text('metres'),
+                  SizedBox(
+                    height: 12,
+                  ),
+                ],
+              ),
             ),
             preferredSize: Size.fromHeight(240),
           ),
@@ -75,15 +102,19 @@ class _ProjectDetailMobileState extends State<ProjectDetailMobile>
                 child: Column(
                   children: [
                     SizedBox(
-                      height: 24,
-                    ),
-                    Text(
-                        'Start Monitoring this project using Photos and Videos'),
-                    SizedBox(
-                      height: 24,
+                      height: 48,
                     ),
                     RaisedButton(
-                      onPressed: _startMonitoring,
+                      elevation: isWithinDistance ? 16 : 1,
+                      onPressed: () async {
+                        isWithinDistance = await _checkProjectDistance();
+                        if (isWithinDistance) {
+                          _startMonitoring();
+                        } else {
+                          setState(() {});
+                          _showError();
+                        }
+                      },
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Text(
@@ -116,6 +147,20 @@ class _ProjectDetailMobileState extends State<ProjectDetailMobile>
                             ],
                           )
                         : Container(),
+                    SizedBox(
+                      height: 24,
+                    ),
+                    isWithinDistance
+                        ? Container(
+                            child: Text('We are good to go!',
+                                style: Styles.blackBoldSmall),
+                          )
+                        : Container(
+                            child: Text(
+                              'Device is too far from a project',
+                              style: Styles.pinkBoldSmall,
+                            ),
+                          ),
                   ],
                 ),
               ),
@@ -126,7 +171,7 @@ class _ProjectDetailMobileState extends State<ProjectDetailMobile>
     );
   }
 
-  Future<Position> _findNearestProjectPosition() async {
+  Future<ProjectPosition> _findNearestProjectPosition() async {
     var bags = List<BagX>();
     if (widget.project.projectPositions.length == 1) {
       return widget.project.projectPositions.first;
@@ -141,54 +186,37 @@ class _ProjectDetailMobileState extends State<ProjectDetailMobile>
     return bags.first.position;
   }
 
-  void _startMonitoring() async {
-    pp('🍏 🍏 Start Monitoring this project after checking that the device is within 500 metres of a project point');
+  bool isWithinDistance = false;
+  ProjectPosition nearestProjectPosition;
+
+  Future<bool> _checkProjectDistance() async {
     setState(() {
       isBusy = true;
     });
-    var nearestProjectPosition = await _findNearestProjectPosition();
+    nearestProjectPosition = await _findNearestProjectPosition();
     var distance = await locationBloc.getDistanceFromCurrentPosition(
-        latitude: nearestProjectPosition.coordinates[1],
-        longitude: nearestProjectPosition.coordinates[0]);
+        latitude: nearestProjectPosition.position.coordinates[1],
+        longitude: nearestProjectPosition.position.coordinates[0]);
 
     pp("🍏 🍏 🍏 App is ${distance.toStringAsFixed(1)} metres from the project point");
-    if (widget.project.monitorMaxDistanceInMetres != null) {
-      if (distance > widget.project.monitorMaxDistanceInMetres) {
-        pp("🔆🔆🔆 App is ${distance.toStringAsFixed(1)} metres is greater than allowed project.monitorMaxDistanceInMetres: "
-            "🍎 ${widget.project.monitorMaxDistanceInMetres} metres");
-        AppSnackbar.showErrorSnackbar(
-            scaffoldKey: _key,
-            actionLabel: '',
-            message:
-                "You are too far from the project for monitoring to work properly");
-        setState(() {
-          isBusy = false;
-        });
-      } else {
-        pp('🌸 🌸 🌸 The app is within the allowable project.monitorMaxDistanceInMetres of ${widget.project.monitorMaxDistanceInMetres} metres .'
-            ' 🍎 Distance to project is ${distance.toStringAsFixed(1)} metres');
-        setState(() {
-          isBusy = false;
-        });
-        _navigateToMediaHouse(nearestProjectPosition);
-      }
+    if (distance > widget.project.monitorMaxDistanceInMetres) {
+      pp("🔆🔆🔆 App is ${distance.toStringAsFixed(1)} metres is greater than allowed project.monitorMaxDistanceInMetres: "
+          "🍎 ${widget.project.monitorMaxDistanceInMetres} metres");
+      isWithinDistance = false;
     } else {
-      if (distance > 200.0) {
-        pp("🔆🔆🔆 App is ${distance.toStringAsFixed(1)} metres is greater than allowed max default of 200.0 metres");
-        setState(() {
-          isBusy = false;
-        });
-      } else {
-        pp('🌸 🌸 🌸 The app is within the allowable distance!${distance.toStringAsFixed(1)} metres');
-        setState(() {
-          isBusy = false;
-        });
-        _navigateToMediaHouse(nearestProjectPosition);
-      }
+      isWithinDistance = true;
+      pp('🌸 🌸 🌸 The app is within the allowable project.monitorMaxDistanceInMetres of '
+          '${widget.project.monitorMaxDistanceInMetres} metres');
     }
+    setState(() {
+      isBusy = false;
+    });
+    return isWithinDistance;
   }
 
-  _navigateToMediaHouse(Position position) async {
+  void _startMonitoring() async {
+    pp('🍏 🍏 Start Monitoring this project after checking that the device is within '
+        ' 🍎 ${widget.project.monitorMaxDistanceInMetres} metres 🍎 of a project point within ${widget.project.name}');
     Navigator.push(
         context,
         PageTransition(
@@ -197,14 +225,25 @@ class _ProjectDetailMobileState extends State<ProjectDetailMobile>
             duration: Duration(seconds: 1),
             child: MediaHouse(
               project: widget.project,
-              projectPosition: position,
+              projectPosition: nearestProjectPosition,
             )));
+  }
+
+  _showError() {
+    AppSnackbar.showErrorSnackbar(
+        scaffoldKey: _key,
+        actionLabel: '',
+        message:
+            "You are too far from the project for monitoring to work properly");
+    setState(() {
+      isBusy = false;
+    });
   }
 }
 
 class BagX {
   double distance;
-  Position position;
+  ProjectPosition position;
 
   BagX(this.distance, this.position);
 }

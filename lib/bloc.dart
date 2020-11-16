@@ -4,7 +4,9 @@ import 'package:monitorlibrary/api/data_api.dart';
 import 'package:monitorlibrary/api/sharedprefs.dart';
 import 'package:monitorlibrary/data/community.dart';
 import 'package:monitorlibrary/data/country.dart';
+import 'package:monitorlibrary/data/photo.dart';
 import 'package:monitorlibrary/data/project.dart';
+import 'package:monitorlibrary/data/project_position.dart';
 import 'package:monitorlibrary/data/questionnaire.dart';
 import 'package:monitorlibrary/data/user.dart';
 import 'package:monitorlibrary/functions.dart';
@@ -27,6 +29,10 @@ class MonitorBloc {
       StreamController.broadcast();
   StreamController<List<Project>> _projController =
       StreamController.broadcast();
+  StreamController<List<Photo>> _photoController = StreamController.broadcast();
+  StreamController<List<Video>> _videoController = StreamController.broadcast();
+  StreamController<List<ProjectPosition>> _projPositionsController =
+      StreamController.broadcast();
   StreamController<List<Country>> _countryController =
       StreamController.broadcast();
   StreamController<Questionnaire> _activeQuestionnaireController =
@@ -37,6 +43,7 @@ class MonitorBloc {
   Stream get settlementStream => _communityController.stream;
   Stream get questionnaireStream => _questController.stream;
   Stream get projectStream => _projController.stream;
+  Stream get projectPositionsStream => _projPositionsController.stream;
   Stream get countryStream => _countryController.stream;
   Stream get activeUserStream => _activeUserController.stream;
   Stream get usersStream => _userController.stream;
@@ -46,6 +53,9 @@ class MonitorBloc {
   List<Community> _communities = List();
   List<Questionnaire> _questionnaires = List();
   List<Project> _projects = List();
+  List<ProjectPosition> _projectPositions = List();
+  List<Photo> _photos = List();
+  List<Video> _videos = List();
   List<User> _users = List();
   List<Country> _countries = List();
 
@@ -77,6 +87,27 @@ class MonitorBloc {
     return _projects;
   }
 
+  Future<List<ProjectPosition>> getProjectPositions({String projectId}) async {
+    _projectPositions = await DataAPI.findProjectPositionsById(projectId);
+    _projPositionsController.sink.add(_projectPositions);
+    pp('💜 💜 💜 MonitorBloc: getProjectPositions found: 💜 ${_projectPositions.length} projectPositions ');
+    return _projectPositions;
+  }
+
+  Future<List<Photo>> getProjectPhotos({String projectId}) async {
+    _photos = await DataAPI.findPhotosById(projectId);
+    _photoController.sink.add(_photos);
+    pp('💜 💜 💜 MonitorBloc: getProjectPhotos found: 💜 ${_photos.length} photos ');
+    return _photos;
+  }
+
+  Future<List<Video>> getProjectVideos({String projectId}) async {
+    _videos = await DataAPI.findVideosById(projectId);
+    _videoController.sink.add(_videos);
+    pp('💜 💜 💜 MonitorBloc: getProjectVideos found: 💜 ${_videos.length} photos ');
+    return _videos;
+  }
+
   void _initialize() async {
     pp('🏈🏈🏈🏈🏈 Initializing MonitorBloc ....');
     _user = await Prefs.getUser();
@@ -91,5 +122,6 @@ class MonitorBloc {
     _activeQuestionnaireController.close();
     _activeUserController.close();
     _reportController.close();
+    _projPositionsController.close();
   }
 }

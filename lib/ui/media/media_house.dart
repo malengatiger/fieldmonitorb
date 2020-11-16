@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:fieldmonitor3/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,7 @@ import 'package:monitorlibrary/api/sharedprefs.dart';
 import 'package:monitorlibrary/api/storage_bloc.dart';
 import 'package:monitorlibrary/data/position.dart';
 import 'package:monitorlibrary/data/project.dart';
+import 'package:monitorlibrary/data/project_position.dart';
 import 'package:monitorlibrary/data/user.dart';
 import 'package:monitorlibrary/functions.dart';
 import 'package:monitorlibrary/snack.dart';
@@ -17,7 +19,7 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 /// Manage the process of creating media for the project
 class MediaHouse extends StatefulWidget {
   final Project project;
-  final Position projectPosition;
+  final ProjectPosition projectPosition;
 
   MediaHouse({@required this.project, @required this.projectPosition});
 
@@ -50,6 +52,9 @@ class _MediaHouseState extends State<MediaHouse>
 
   void _getUser() async {
     user = await Prefs.getUser();
+    //todo - test apia
+    await monitorBloc.getProjectPhotos(projectId: widget.project.projectId);
+    await monitorBloc.getProjectVideos(projectId: widget.project.projectId);
   }
 
   @override
@@ -76,7 +81,7 @@ class _MediaHouseState extends State<MediaHouse>
           file: imageFile,
           thumbnailFile: thumbnailFile,
           project: widget.project,
-          projectPosition: widget.projectPosition,
+          projectPosition: widget.projectPosition.position,
           isVideo: false);
 
       setState(() {});
@@ -103,7 +108,7 @@ class _MediaHouseState extends State<MediaHouse>
           file: videoFile,
           thumbnailFile: thumbnailFile,
           project: widget.project,
-          projectPosition: widget.projectPosition,
+          projectPosition: widget.projectPosition.position,
           isVideo: true);
     } on PlatformException catch (e) {
       print("🌸 Failed to get or process video: ${e.message} ");

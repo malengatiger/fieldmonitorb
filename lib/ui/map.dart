@@ -31,6 +31,18 @@ class _MonitorMapState extends State<MonitorMap>
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
+    _getUser();
+  }
+
+  void _getUser() async {
+    setState(() {
+      isBusy = true;
+    });
+    user = await Prefs.getUser();
+    pp('🍎 🍎 🍎 user found: 🍎 ${user.name}');
+    setState(() {
+      isBusy = false;
+    });
     _getData();
   }
 
@@ -111,11 +123,46 @@ class _MonitorMapState extends State<MonitorMap>
       body: Stack(
         children: [
           isBusy
-              ? Center(
-                  child: Container(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 8,
-                      backgroundColor: Colors.black,
+              ? Scaffold(
+                  appBar: AppBar(
+                    title: Text('Project Map'),
+                    bottom: PreferredSize(
+                      child: Column(
+                        children: [
+                          Text(
+                            user == null ? '' : user.name,
+                            style: Styles.whiteBoldSmall,
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Text(user == null ? '' : user.organizationName,
+                              style: Styles.blackBoldSmall),
+                          SizedBox(
+                            height: 40,
+                          ),
+                        ],
+                      ),
+                      preferredSize: Size.fromHeight(200),
+                    ),
+                  ),
+                  body: Center(
+                    child: Container(
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 100,
+                          ),
+                          CircularProgressIndicator(
+                            strokeWidth: 8,
+                            backgroundColor: Colors.black,
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Text('Loading Project Data ...'),
+                        ],
+                      ),
                     ),
                   ),
                 )
@@ -131,6 +178,39 @@ class _MonitorMapState extends State<MonitorMap>
                   onLongPress: _onLongPress,
                   markers: Set<Marker>.of(markers.values),
                 ),
+          Positioned(
+            left: 8,
+            top: 40,
+            child: Card(
+              elevation: 16,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Text(
+                      user == null ? '' : user.organizationName,
+                      style: Styles.blackBoldSmall,
+                    ),
+                    SizedBox(
+                      height: 4,
+                    ),
+                    Row(
+                      children: [
+                        Text('Project Points', style: Styles.greyLabelSmall),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          '${projectPositions.length}',
+                          style: Styles.blackBoldMedium,
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
         ],
       ),
       // floatingActionButton: FloatingActionButton.extended(

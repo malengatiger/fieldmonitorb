@@ -55,6 +55,7 @@ class _MediaHouseState extends State<MediaHouse>
     //todo - test apia
     await monitorBloc.getProjectPhotos(projectId: widget.project.projectId);
     await monitorBloc.getProjectVideos(projectId: widget.project.projectId);
+    await monitorBloc.getProjectPositions(projectId: widget.project.projectId);
   }
 
   @override
@@ -102,11 +103,11 @@ class _MediaHouseState extends State<MediaHouse>
       setState(() {
         isUploading = true;
       });
-      var thumbnailFile = await getVideoThumbnail(imageFile);
+      //var thumbnailFile = await getVideoThumbnail(imageFile);
       storageBloc.uploadPhotoOrVideo(
           listener: this,
           file: videoFile,
-          thumbnailFile: thumbnailFile,
+          thumbnailFile: null,
           project: widget.project,
           projectPosition: widget.projectPosition.position,
           isVideo: true);

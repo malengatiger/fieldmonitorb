@@ -6,6 +6,7 @@ import 'package:monitorlibrary/data/user.dart';
 import 'package:monitorlibrary/functions.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
   await Firebase.initializeApp();
   pp('🥦🥦🥦🥦🥦 Firebase has been initialized 🥦🥦🥦🥦');

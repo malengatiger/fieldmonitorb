@@ -25,4 +25,5 @@ flutter:
   assets:
      - .env
      - assets/
+     - assets/mapicons/
 

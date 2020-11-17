@@ -1,3 +1,4 @@
+import 'package:android_intent/android_intent.dart';
 import 'package:fieldmonitor3/bloc.dart';
 import 'package:fieldmonitor3/ui/media/media_house.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +60,12 @@ class _ProjectDetailMobileState extends State<ProjectDetailMobile>
         appBar: AppBar(
           title: Text(widget.project.organizationName,
               style: Styles.whiteBoldSmall),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.directions),
+              onPressed: _navigateToDirections,
+            )
+          ],
           bottom: PreferredSize(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -104,25 +111,27 @@ class _ProjectDetailMobileState extends State<ProjectDetailMobile>
                     SizedBox(
                       height: 48,
                     ),
-                    RaisedButton(
-                      elevation: isWithinDistance ? 16 : 1,
-                      onPressed: () async {
-                        isWithinDistance = await _checkProjectDistance();
-                        if (isWithinDistance) {
-                          _startMonitoring();
-                        } else {
-                          setState(() {});
-                          _showError();
-                        }
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Text(
-                          'Start Monitor',
-                          style: Styles.whiteSmall,
-                        ),
-                      ),
-                    ),
+                    isWithinDistance
+                        ? RaisedButton(
+                            elevation: isWithinDistance ? 16 : 1,
+                            onPressed: () async {
+                              isWithinDistance = await _checkProjectDistance();
+                              if (isWithinDistance) {
+                                _startMonitoring();
+                              } else {
+                                setState(() {});
+                                _showError();
+                              }
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Text(
+                                'Start Monitor',
+                                style: Styles.whiteSmall,
+                              ),
+                            ),
+                          )
+                        : Container(),
                     SizedBox(
                       height: 24,
                     ),
@@ -238,6 +247,45 @@ class _ProjectDetailMobileState extends State<ProjectDetailMobile>
     setState(() {
       isBusy = false;
     });
+  }
+
+  /*
+  String origin="somestartLocationStringAddress or lat,long";  // lat,long like 123.34,68.56
+String destination="someEndLocationStringAddress or lat,long";
+if (new LocalPlatform().isAndroid) {
+      final AndroidIntent intent = new AndroidIntent(
+          action: 'action_view',
+          data: Uri.encodeFull(
+              "https://www.google.com/maps/dir/?api=1&origin=" +
+                  origin + "&destination=" + destination + "&travelmode=driving&dir_action=navigate"),
+          package: 'com.google.android.apps.maps');
+      intent.launch();
+    }
+    else {
+        String url = "https://www.google.com/maps/dir/?api=1&origin=" + origin + "&destination=" + destination + "&travelmode=driving&dir_action=navigate";
+        if (await canLaunch(url)) {
+              await launch(url);
+       } else {
+            throw 'Could not launch $url';
+       }
+    }
+   */
+  void _navigateToDirections() async {
+    pp('🏖 🍎 🍎 🍎 start Google Maps Directions .....');
+    var origin =
+        '${widget.project.position.coordinates[1]},${widget.project.position.coordinates[0]}';
+    var position = await locationBloc.getLocation();
+    var destination = '${position.latitude},${position.longitude}';
+
+    final AndroidIntent intent = new AndroidIntent(
+        action: 'action_view',
+        data: Uri.encodeFull("https://www.google.com/maps/dir/?api=1&origin=" +
+            origin +
+            "&destination=" +
+            destination +
+            "&travelmode=driving&dir_action=navigate"),
+        package: 'com.google.android.apps.maps');
+    intent.launch();
   }
 }
 

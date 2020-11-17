@@ -1,4 +1,5 @@
 import 'package:fieldmonitor3/bloc.dart';
+import 'package:fieldmonitor3/ui/map.dart';
 import 'package:fieldmonitor3/ui/project_detail/project_detail_main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ class _ProjectListMobileState extends State<ProjectListMobile>
   var projects = List<Project>();
   User user;
   bool isBusy = false;
+  bool isProjectsByLocation = false;
 
   @override
   void initState() {
@@ -34,7 +36,7 @@ class _ProjectListMobileState extends State<ProjectListMobile>
     });
     user = await Prefs.getUser();
     if (user != null) {
-      monitorBloc.getOrganizationProjects(organizationId: user.organizationId);
+      await refreshProjects();
     }
 
     setState(() {
@@ -46,6 +48,22 @@ class _ProjectListMobileState extends State<ProjectListMobile>
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future refreshProjects() async {
+    setState(() {
+      isBusy = true;
+    });
+    if (isProjectsByLocation) {
+      await monitorBloc.getProjectsWithinRadius(
+          radiusInKM: 1.0, checkUserOrg: true);
+    } else {
+      await monitorBloc.getOrganizationProjects(
+          organizationId: user.organizationId);
+    }
+    setState(() {
+      isBusy = false;
+    });
   }
 
   @override
@@ -71,7 +89,20 @@ class _ProjectListMobileState extends State<ProjectListMobile>
                       onPressed: () {
                         themeBloc.changeToRandomTheme();
                       },
-                    )
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.location_on),
+                      onPressed: () {
+                        isProjectsByLocation = !isProjectsByLocation;
+                        refreshProjects();
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.map_outlined),
+                      onPressed: () {
+                        _navigateToMap();
+                      },
+                    ),
                   ],
                   bottom: PreferredSize(
                     child: Column(
@@ -105,11 +136,24 @@ class _ProjectListMobileState extends State<ProjectListMobile>
                 backgroundColor: Colors.brown[100],
                 body: isBusy
                     ? Center(
-                        child: Container(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 8,
-                            backgroundColor: Colors.indigo,
-                          ),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 100,
+                            ),
+                            Container(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 8,
+                                backgroundColor: Colors.indigo,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text(isProjectsByLocation
+                                ? 'Finding Nearby Projects'
+                                : 'Finding Organization Projects'),
+                          ],
                         ),
                       )
                     : Padding(
@@ -193,5 +237,16 @@ class _ProjectListMobileState extends State<ProjectListMobile>
             alignment: Alignment.topLeft,
             duration: Duration(seconds: 1),
             child: ProjectDetailMain(p)));
+  }
+
+  void _navigateToMap() {
+    pp('_navigateToMap: ');
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: Duration(seconds: 1),
+            child: MonitorMap()));
   }
 }

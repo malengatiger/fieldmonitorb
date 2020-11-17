@@ -60,14 +60,25 @@ class MonitorBloc {
   List<Country> _countries = List();
 
   Future<List<Project>> getProjectsWithinRadius(
-      {double radiusInKM = 100.5}) async {
+      {double radiusInKM = 100.5, bool checkUserOrg = true}) async {
     var pos = await locationBloc.getLocation();
     pp('💜 💜 💜 MonitorBloc: current location: 💜 latitude: ${pos.latitude} longitude: ${pos.longitude}');
-    _projects = await DataAPI.findProjectsByLocation(
+    var projects = await DataAPI.findProjectsByLocation(
         latitude: pos.latitude,
         longitude: pos.longitude,
         radiusInKM: radiusInKM);
-    _projController.sink.add(_projects);
+    var userProjects = List<Project>();
+    projects.forEach((element) {
+      if (element.organizationId == user.organizationId) {
+        userProjects.add(element);
+      }
+    });
+
+    if (checkUserOrg) {
+      _projController.sink.add(userProjects);
+    } else {
+      _projController.sink.add(projects);
+    }
     pp('💜 💜 💜 MonitorBloc: Projects within radius of $radiusInKM kilometres; found: 💜 ${_projects.length} projects');
     _projects.forEach((element) {
       pp('💜 💜 PROJECT: ${element.name} 🍏 ${element.organizationName}');
@@ -104,7 +115,7 @@ class MonitorBloc {
   Future<List<Video>> getProjectVideos({String projectId}) async {
     _videos = await DataAPI.findVideosById(projectId);
     _videoController.sink.add(_videos);
-    pp('💜 💜 💜 MonitorBloc: getProjectVideos found: 💜 ${_videos.length} photos ');
+    pp('💜 💜 💜 MonitorBloc: getProjectVideos found: 💜 ${_videos.length} videos ');
     return _videos;
   }
 

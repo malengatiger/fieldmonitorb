@@ -1,9 +1,9 @@
-import 'package:fieldmonitor3/ui/project_list/project_list_main.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:monitorlibrary/bloc/theme_bloc.dart';
 import 'package:monitorlibrary/data/user.dart';
 import 'package:monitorlibrary/functions.dart';
+import 'package:monitorlibrary/ui/project_list/project_list_main.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

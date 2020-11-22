@@ -9,7 +9,7 @@
         android:label="fieldmonitor3"
         android:icon="@mipmap/ic_launcher">
        <meta-data android:name="com.google.android.geo.API_KEY"
-           android:value="AIzaSyDTnEp_iXbyCsmsslejJTgEW0elUb-1u08"/>
+           android:value="AIzaSyA6nNO_9FgDKfIIHXG66VVennTS6BxjAWM"/>
        <provider
            android:name="androidx.core.content.FileProvider"
            android:authorities="com.boha3.fileprovider"

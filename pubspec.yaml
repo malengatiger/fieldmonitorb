@@ -26,4 +26,5 @@ flutter:
      - .env
      - assets/
      - assets/mapicons/
+     - assets/intro/
 

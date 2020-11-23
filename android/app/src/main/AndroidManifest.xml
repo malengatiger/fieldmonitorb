@@ -9,7 +9,7 @@
         android:label="aamonitor"
         android:icon="@mipmap/ic_launcher">
        <meta-data android:name="com.google.android.geo.API_KEY"
-           android:value="AIzaSyA6nNO_9FgDKfIIHXG66VVennTS6BxjAWM"/>
+           android:value="AIzaSyCnc7Ay-B1iyAIokMVXS_P-4fnYCx8HhRc"/>
        <provider
            android:name="androidx.core.content.FileProvider"
            android:authorities="com.boha3.fileprovider"

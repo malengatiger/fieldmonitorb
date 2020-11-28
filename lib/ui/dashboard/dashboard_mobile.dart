@@ -106,10 +106,10 @@ class _DashboardMobileState extends State<DashboardMobile>
                 children: [
                   Text(
                     widget.user == null ? '' : widget.user.organizationName,
-                    style: Styles.blackBoldSmall,
+                    style: Styles.blackBoldMedium,
                   ),
                   SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   Text(
                     widget.user == null ? '' : widget.user.name,
@@ -264,16 +264,6 @@ class _DashboardMobileState extends State<DashboardMobile>
         break;
     }
   }
-
-  // void _navigateToUserList() {
-  //   Navigator.push(
-  //       context,
-  //       PageTransition(
-  //           type: PageTransitionType.scale,
-  //           alignment: Alignment.topLeft,
-  //           duration: Duration(seconds: 1),
-  //           child: UserListMain()));
-  // }
 
   void _navigateToProjectList() {
     Navigator.push(

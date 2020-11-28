@@ -5,8 +5,9 @@ import 'package:monitorlibrary/bloc/theme_bloc.dart';
 import 'package:monitorlibrary/data/photo.dart';
 import 'package:monitorlibrary/data/project.dart';
 import 'package:monitorlibrary/data/user.dart' as mon;
+import 'package:monitorlibrary/data/user.dart';
 import 'package:monitorlibrary/functions.dart';
-import 'package:monitorlibrary/snack.dart';
+import 'package:monitorlibrary/ui/media/user_media_list/user_media_list_main.dart';
 import 'package:monitorlibrary/ui/project_list/project_list_main.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -26,6 +27,7 @@ class _DashboardMobileState extends State<DashboardMobile>
   var _users = List<mon.User>();
   var _photos = List<Photo>();
   var _videos = List<Video>();
+  User user;
 
   @override
   void initState() {
@@ -256,11 +258,7 @@ class _DashboardMobileState extends State<DashboardMobile>
 
       case 1:
         pp(' 🔆🔆🔆 Navigate to MediaList');
-        AppSnackbar.showSnackbar(
-            scaffoldKey: _key,
-            message: 'Under Construction',
-            textColor: Colors.white,
-            backgroundColor: Theme.of(context).primaryColor);
+        _navigateToMediaList();
         break;
     }
   }
@@ -273,6 +271,16 @@ class _DashboardMobileState extends State<DashboardMobile>
             alignment: Alignment.topLeft,
             duration: Duration(seconds: 1),
             child: ProjectListMain(widget.user)));
+  }
+
+  void _navigateToMediaList() {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: Duration(seconds: 1),
+            child: UserMediaListMain(user)));
   }
 
   void _navigateToIntro() {

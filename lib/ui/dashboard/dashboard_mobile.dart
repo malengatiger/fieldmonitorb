@@ -74,10 +74,17 @@ class _DashboardMobileState extends State<DashboardMobile>
   void _setItems() {
     // items
     //     .add(BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Users'));
-    items.add(
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Projects'));
-    items.add(
-        BottomNavigationBarItem(icon: Icon(Icons.report), label: 'Reports'));
+    items.add(BottomNavigationBarItem(
+        icon: Icon(
+          Icons.home,
+        ),
+        label: 'Projects'));
+    items.add(BottomNavigationBarItem(
+        icon: Icon(
+          Icons.report,
+          color: Colors.blue,
+        ),
+        label: 'Created Media'));
   }
 
   @override

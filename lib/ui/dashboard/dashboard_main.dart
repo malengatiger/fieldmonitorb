@@ -25,23 +25,15 @@ class _DashboardMainState extends State<DashboardMain>
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
-    _refreshData();
+    _refreshData(false);
   }
 
-  void _refreshData() async {
+  void _refreshData(bool forceRefresh) async {
     pp('Refresh data ....');
     setState(() {
       isBusy = true;
     });
-
-    monitorBloc.getOrganizationProjects(
-        organizationId: widget.user.organizationId);
-    monitorBloc.getOrganizationUsers(
-        organizationId: widget.user.organizationId);
-    monitorBloc.getOrganizationPhotos(
-        organizationId: widget.user.organizationId);
-    monitorBloc.getOrganizationVideos(
-        organizationId: widget.user.organizationId);
+    monitorBloc.refreshDashboardData(forceRefresh: forceRefresh);
   }
 
   @override

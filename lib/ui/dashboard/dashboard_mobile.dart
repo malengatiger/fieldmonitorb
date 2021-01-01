@@ -39,28 +39,36 @@ class _DashboardMobileState extends State<DashboardMobile>
 
   void _listenToStreams() async {
     monitorBloc.projectStream.listen((event) {
-      setState(() {
-        _projects = event;
-        pp('_DashboardMobileState: 🎽 🎽 🎽 projects delivered by stream: ${_projects.length} ...');
-      });
+      if (mounted) {
+        setState(() {
+          _projects = event;
+          pp('_DashboardMobileState: 🎽 🎽 🎽 projects delivered by stream: ${_projects.length} ...');
+        });
+      }
     });
     monitorBloc.usersStream.listen((event) {
-      setState(() {
-        _users = event;
-        pp('_DashboardMobileState: 🎽 🎽 🎽 users delivered by stream: ${_users.length} ...');
-      });
+      if (mounted) {
+        setState(() {
+          _users = event;
+          pp('_DashboardMobileState: 🎽 🎽 🎽 users delivered by stream: ${_users.length} ...');
+        });
+      }
     });
     monitorBloc.photoStream.listen((event) {
-      setState(() {
-        _photos = event;
-        pp('_DashboardMobileState: 🎽 🎽 🎽 photos delivered by stream: ${_photos.length} ...');
-      });
+      if (mounted) {
+        setState(() {
+          _photos = event;
+          pp('_DashboardMobileState: 🎽 🎽 🎽 photos delivered by stream: ${_photos.length} ...');
+        });
+      }
     });
     monitorBloc.videoStream.listen((event) {
-      setState(() {
-        _videos = event;
-        pp('_DashboardMobileState: 🎽 🎽 🎽 videos delivered by stream: ${_videos.length} ...');
-      });
+      if (mounted) {
+        setState(() {
+          _videos = event;
+          pp('_DashboardMobileState: 🎽 🎽 🎽 videos delivered by stream: ${_videos.length} ...');
+        });
+      }
     });
   }
 
@@ -87,6 +95,10 @@ class _DashboardMobileState extends State<DashboardMobile>
         label: 'Created Media'));
   }
 
+  void _refresh() async {
+    monitorBloc.refreshDashboardData(forceRefresh: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -104,7 +116,7 @@ class _DashboardMobileState extends State<DashboardMobile>
             ),
             IconButton(
               icon: Icon(Icons.refresh),
-              onPressed: _listenToStreams,
+              onPressed: _refresh,
             )
           ],
           bottom: PreferredSize(
@@ -115,7 +127,7 @@ class _DashboardMobileState extends State<DashboardMobile>
                 children: [
                   Text(
                     widget.user == null ? '' : widget.user.organizationName,
-                    style: Styles.blackBoldMedium,
+                    style: Styles.blackBoldSmall,
                   ),
                   SizedBox(
                     height: 16,

@@ -10,6 +10,7 @@ import 'package:monitorlibrary/functions.dart';
 import 'package:monitorlibrary/snack.dart';
 import 'package:monitorlibrary/ui/media/user_media_list/user_media_list_main.dart';
 import 'package:monitorlibrary/ui/project_list/project_list_main.dart';
+import 'package:monitorlibrary/users/list/user_list_main.dart';
 import 'package:page_transition/page_transition.dart';
 
 class DashboardMobile extends StatefulWidget {
@@ -106,7 +107,7 @@ class _DashboardMobileState extends State<DashboardMobile>
       await monitorBloc.refreshDashboardData(forceRefresh: forceRefresh);
     } catch (e) {
       AppSnackbar.showErrorSnackbar(
-          scaffoldKey: _key, message: 'Data refresh failed');
+          scaffoldKey: _key, message: 'Dashboard refresh failed');
     }
     setState(() {
       isBusy = false;
@@ -119,6 +120,10 @@ class _DashboardMobileState extends State<DashboardMobile>
       child: Scaffold(
         key: _key,
         appBar: AppBar(
+          title: Text(
+            'Digital Monitor',
+            style: Styles.whiteTiny,
+          ),
           actions: [
             IconButton(
                 icon: Icon(Icons.info_outline), onPressed: _navigateToIntro),
@@ -209,24 +214,27 @@ class _DashboardMobileState extends State<DashboardMobile>
                           ),
                         ),
                         Container(
-                          child: Card(
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: 48,
-                                ),
-                                Text(
-                                  '${_users.length}',
-                                  style: Styles.blackBoldLarge,
-                                ),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  'Users',
-                                  style: Styles.greyLabelSmall,
-                                )
-                              ],
+                          child: GestureDetector(
+                            onTap: _navigateToUserList,
+                            child: Card(
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    height: 48,
+                                  ),
+                                  Text(
+                                    '${_users.length}',
+                                    style: Styles.blackBoldLarge,
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  Text(
+                                    'Users',
+                                    style: Styles.greyLabelSmall,
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -328,5 +336,15 @@ class _DashboardMobileState extends State<DashboardMobile>
             child: IntroMain(
               user: widget.user,
             )));
+  }
+
+  void _navigateToUserList() {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: Duration(seconds: 1),
+            child: UserListMain()));
   }
 }

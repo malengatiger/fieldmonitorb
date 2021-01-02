@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:monitorlibrary/bloc/monitor_bloc.dart';
 import 'package:monitorlibrary/data/user.dart';
-import 'package:monitorlibrary/functions.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import 'dashboard_desktop.dart';
@@ -25,15 +23,6 @@ class _DashboardMainState extends State<DashboardMain>
   void initState() {
     _controller = AnimationController(vsync: this);
     super.initState();
-    _refreshData(false);
-  }
-
-  void _refreshData(bool forceRefresh) async {
-    pp('Refresh data ....');
-    setState(() {
-      isBusy = true;
-    });
-    monitorBloc.refreshDashboardData(forceRefresh: forceRefresh);
   }
 
   @override

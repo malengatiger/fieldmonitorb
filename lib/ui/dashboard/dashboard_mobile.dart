@@ -1,5 +1,7 @@
 import 'package:fieldmonitor3/ui/intro/intro_main.dart';
 import 'package:flutter/material.dart';
+import 'package:monitorlibrary/api/sharedprefs.dart';
+import 'package:monitorlibrary/bloc/fcm_bloc.dart';
 import 'package:monitorlibrary/bloc/monitor_bloc.dart';
 import 'package:monitorlibrary/bloc/theme_bloc.dart';
 import 'package:monitorlibrary/data/photo.dart';
@@ -11,7 +13,9 @@ import 'package:monitorlibrary/snack.dart';
 import 'package:monitorlibrary/ui/media/user_media_list/user_media_list_main.dart';
 import 'package:monitorlibrary/ui/project_list/project_list_main.dart';
 import 'package:monitorlibrary/users/list/user_list_main.dart';
+import 'package:monitorlibrary/users/special_snack.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 class DashboardMobile extends StatefulWidget {
   final mon.User user;
@@ -22,13 +26,14 @@ class DashboardMobile extends StatefulWidget {
 }
 
 class _DashboardMobileState extends State<DashboardMobile>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin
+    implements SpecialSnackListener {
   AnimationController _controller;
   var isBusy = false;
-  var _projects = List<Project>();
-  var _users = List<mon.User>();
-  var _photos = List<Photo>();
-  var _videos = List<Video>();
+  var _projects = <Project>[];
+  var _users = <mon.User>[];
+  var _photos = <Photo>[];
+  var _videos = <Video>[];
   User user;
 
   @override
@@ -37,6 +42,7 @@ class _DashboardMobileState extends State<DashboardMobile>
     super.initState();
     _setItems();
     _listenToStreams();
+    _listenForFCM();
     _refreshData(false);
   }
 
@@ -81,7 +87,7 @@ class _DashboardMobileState extends State<DashboardMobile>
     super.dispose();
   }
 
-  var items = List<BottomNavigationBarItem>();
+  var items = <BottomNavigationBarItem>[];
   void _setItems() {
     // items
     //     .add(BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Users'));
@@ -92,10 +98,16 @@ class _DashboardMobileState extends State<DashboardMobile>
         label: 'Projects'));
     items.add(BottomNavigationBarItem(
         icon: Icon(
-          Icons.report,
+          Icons.person,
+          color: Colors.pink,
+        ),
+        label: 'My Work'));
+    items.add(BottomNavigationBarItem(
+        icon: Icon(
+          Icons.send,
           color: Colors.blue,
         ),
-        label: 'Created Media'));
+        label: 'Send Message'));
   }
 
   void _refreshData(bool forceRefresh) async {
@@ -104,14 +116,65 @@ class _DashboardMobileState extends State<DashboardMobile>
       isBusy = true;
     });
     try {
-      await monitorBloc.refreshDashboardData(forceRefresh: forceRefresh);
+      user = await Prefs.getUser();
+      await monitorBloc.refreshUserData(
+          userId: user.userId,
+          organizationId: user.organizationId,
+          forceRefresh: forceRefresh);
     } catch (e) {
+      print(e);
       AppSnackbar.showErrorSnackbar(
-          scaffoldKey: _key, message: 'Dashboard refresh failed');
+          scaffoldKey: _key, message: 'Dashboard refresh failed: $e');
     }
     setState(() {
       isBusy = false;
     });
+  }
+
+  void _listenForFCM() async {
+    var android = UniversalPlatform.isAndroid;
+    var ios = UniversalPlatform.isIOS;
+
+    if (android || ios) {
+      pp('DashboardMobile: 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
+
+      fcmBloc.projectStream.listen((Project project) async {
+        if (mounted) {
+          pp('DashboardMobile: 🍎 🍎 showProjectSnackbar: ${project.name} ... 🍎 🍎');
+          _projects = await monitorBloc.getOrganizationProjects(
+              organizationId: user.organizationId, forceRefresh: false);
+          setState(() {});
+          SpecialSnack.showProjectSnackbar(
+              scaffoldKey: _key,
+              textColor: Colors.white,
+              backgroundColor: Theme.of(context).primaryColor,
+              project: project,
+              listener: this);
+        }
+      });
+
+      fcmBloc.userStream.listen((User user) async {
+        if (mounted) {
+          pp('DashboardMobile: 🍎 🍎 showUserSnackbar: ${user.name} ... 🍎 🍎');
+          _users = await monitorBloc.getOrganizationUsers(
+              organizationId: user.organizationId, forceRefresh: false);
+          setState(() {});
+          SpecialSnack.showUserSnackbar(
+              scaffoldKey: _key, user: user, listener: this);
+        }
+      });
+
+      fcmBloc.messageStream.listen((mon.OrgMessage message) {
+        if (mounted) {
+          pp('DashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.message} ... 🍎 🍎');
+
+          SpecialSnack.showMessageSnackbar(
+              scaffoldKey: _key, message: message, listener: this);
+        }
+      });
+    } else {
+      pp('App is running on the Web 👿 👿 👿  firebase messaging is OFF 👿 👿 👿');
+    }
   }
 
   @override
@@ -126,24 +189,34 @@ class _DashboardMobileState extends State<DashboardMobile>
           ),
           actions: [
             IconButton(
-                icon: Icon(Icons.info_outline), onPressed: _navigateToIntro),
+                icon: Icon(
+                  Icons.info_outline,
+                  size: 20,
+                ),
+                onPressed: _navigateToIntro),
             IconButton(
-              icon: Icon(Icons.settings),
+              icon: Icon(
+                Icons.settings,
+                size: 20,
+              ),
               onPressed: () {
                 themeBloc.changeToRandomTheme();
               },
             ),
             IconButton(
-              icon: Icon(Icons.refresh),
+              icon: Icon(
+                Icons.refresh,
+                size: 20,
+              ),
               onPressed: () {
                 _refreshData(true);
               },
             )
           ],
           bottom: PreferredSize(
-            preferredSize: Size.fromHeight(120),
+            preferredSize: Size.fromHeight(100),
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
                   Text(
@@ -151,14 +224,15 @@ class _DashboardMobileState extends State<DashboardMobile>
                     style: Styles.blackBoldSmall,
                   ),
                   SizedBox(
-                    height: 16,
+                    height: 24,
                   ),
                   Text(
                     widget.user == null ? '' : widget.user.name,
-                    style: Styles.whiteSmall,
+                    style: Styles.whiteBoldSmall,
                   ),
+                  Text('Field Monitor', style: Styles.whiteTiny),
                   SizedBox(
-                    height: 12,
+                    height: 8,
                   ),
                 ],
               ),
@@ -173,11 +247,11 @@ class _DashboardMobileState extends State<DashboardMobile>
         body: isBusy
             ? Center(
                 child: Container(
-                  height: 100,
-                  width: 100,
+                  height: 48,
+                  width: 48,
                   child: CircularProgressIndicator(
-                    strokeWidth: 8,
-                    backgroundColor: Colors.teal,
+                    strokeWidth: 12,
+                    backgroundColor: Colors.black,
                   ),
                 ),
               )
@@ -192,6 +266,8 @@ class _DashboardMobileState extends State<DashboardMobile>
                           child: GestureDetector(
                             onTap: _navigateToProjectList,
                             child: Card(
+                              color: Colors.brown[50],
+                              elevation: 2,
                               child: Column(
                                 children: [
                                   SizedBox(
@@ -217,6 +293,8 @@ class _DashboardMobileState extends State<DashboardMobile>
                           child: GestureDetector(
                             onTap: _navigateToUserList,
                             child: Card(
+                              color: Colors.brown[50],
+                              elevation: 2,
                               child: Column(
                                 children: [
                                   SizedBox(
@@ -240,6 +318,7 @@ class _DashboardMobileState extends State<DashboardMobile>
                         ),
                         Container(
                           child: Card(
+                            elevation: 4,
                             child: Column(
                               children: [
                                 SizedBox(
@@ -262,6 +341,7 @@ class _DashboardMobileState extends State<DashboardMobile>
                         ),
                         Container(
                           child: Card(
+                            elevation: 4,
                             child: Column(
                               children: [
                                 SizedBox(
@@ -302,6 +382,12 @@ class _DashboardMobileState extends State<DashboardMobile>
       case 1:
         pp(' 🔆🔆🔆 Navigate to MediaList');
         _navigateToMediaList();
+        break;
+
+      case 2:
+        pp(' 🔆🔆🔆 Navigate to MessageSender');
+        AppSnackbar.showErrorSnackbar(
+            scaffoldKey: _key, message: 'Message sending coming soon!');
         break;
     }
   }
@@ -346,5 +432,10 @@ class _DashboardMobileState extends State<DashboardMobile>
             alignment: Alignment.topLeft,
             duration: Duration(seconds: 1),
             child: UserListMain()));
+  }
+
+  @override
+  onClose() {
+    ScaffoldMessenger.of(_key.currentState.context).removeCurrentSnackBar();
   }
 }

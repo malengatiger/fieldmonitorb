@@ -2,11 +2,13 @@ import 'package:fieldmonitor3/ui/intro/intro_main.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:monitorlibrary/bloc/theme_bloc.dart';
 import 'package:monitorlibrary/functions.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await DotEnv.load(fileName: ".env");
   runApp(MyApp());
   await Firebase.initializeApp();
   pp('🥦🥦🥦🥦🥦 Firebase has been initialized 🥦🥦🥦🥦');

@@ -135,8 +135,7 @@ class _SigninMobileState extends State<SigninMobile>
   }
 
   void _checkStatus() async {
-    await DotEnv().load('.env');
-    var status = DotEnv().env['status'];
+    var status = env['status'];
     pp('🥦🥦 Checking status ..... 🥦🥦 $status 🌸 🌸 🌸');
     if (status == 'dev') {
       emailCntr.text = 'monitor.yue@monitor.com';

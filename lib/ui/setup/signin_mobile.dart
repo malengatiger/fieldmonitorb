@@ -31,7 +31,6 @@ class _SigninMobileState extends State<SigninMobile>
           'Digital Monitor Platform',
           style: Styles.whiteSmall,
         ),
-        backgroundColor: Colors.brown[400],
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(80),
           child: Column(
@@ -138,7 +137,7 @@ class _SigninMobileState extends State<SigninMobile>
     var status = env['status'];
     pp('🥦🥦 Checking status ..... 🥦🥦 $status 🌸 🌸 🌸');
     if (status == 'dev') {
-      emailCntr.text = 'monitor.yue@monitor.com';
+      emailCntr.text = 'jane@orga.com';
       pswdCntr.text = 'pass123';
     }
     setState(() {});
@@ -171,7 +170,7 @@ class _SigninMobileState extends State<SigninMobile>
         isBusy = false;
       });
       AppSnackbar.showErrorSnackbar(
-          scaffoldKey: _key, message: 'Sign In Failed', actionLabel: '');
+          scaffoldKey: _key, message: 'Sign In Failed: $e', actionLabel: '');
     }
   }
 

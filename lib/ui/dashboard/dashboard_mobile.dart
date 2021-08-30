@@ -1,4 +1,8 @@
+import 'dart:async';
+
+import 'package:connectivity/connectivity.dart';
 import 'package:fieldmonitor3/ui/intro/intro_main.dart';
+import 'package:fieldmonitor3/ui/schedules/schedules_list_main.dart';
 import 'package:flutter/material.dart';
 import 'package:monitorlibrary/api/sharedprefs.dart';
 import 'package:monitorlibrary/bloc/fcm_bloc.dart';
@@ -11,6 +15,7 @@ import 'package:monitorlibrary/data/user.dart';
 import 'package:monitorlibrary/functions.dart';
 import 'package:monitorlibrary/snack.dart';
 import 'package:monitorlibrary/ui/media/user_media_list/user_media_list_main.dart';
+import 'package:monitorlibrary/ui/message/message_main.dart';
 import 'package:monitorlibrary/ui/project_list/project_list_main.dart';
 import 'package:monitorlibrary/users/list/user_list_main.dart';
 import 'package:monitorlibrary/users/special_snack.dart';
@@ -36,6 +41,10 @@ class _DashboardMobileState extends State<DashboardMobile>
   var _videos = <Video>[];
   User user;
 
+  StreamSubscription<ConnectivityResult> subscription;
+
+  static const nn = 'DashboardMobile:  😡 😡 ';
+  bool networkAvailable = false;
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
@@ -44,6 +53,28 @@ class _DashboardMobileState extends State<DashboardMobile>
     _listenToStreams();
     _listenForFCM();
     _refreshData(false);
+    _subscribeToConnectivity();
+  }
+
+  void _subscribeToConnectivity() {
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      pp('$nn onConnectivityChanged: result index: ${result.index}');
+      if (result.index == ConnectivityResult.mobile.index) {
+        pp('$nn ConnectivityResult.mobile.index: ${result.index} - 🍎 MOBILE NETWORK is on!');
+        networkAvailable = true;
+      }
+      if (result.index == ConnectivityResult.wifi.index) {
+        pp('$nn ConnectivityResult.wifi.index:  ${result.index} - 🍎 WIFI is on!');
+        networkAvailable = true;
+      }
+      if (result.index == ConnectivityResult.none.index) {
+        pp('ConnectivityResult.none.index: ${result.index} = 🍎 NONE - AIRPLANE MODE?');
+        networkAvailable = false;
+      }
+      setState(() {});
+    });
   }
 
   void _listenToStreams() async {
@@ -84,6 +115,7 @@ class _DashboardMobileState extends State<DashboardMobile>
   @override
   void dispose() {
     _controller.dispose();
+    subscription.cancel();
     super.dispose();
   }
 
@@ -180,194 +212,212 @@ class _DashboardMobileState extends State<DashboardMobile>
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        key: _key,
-        appBar: AppBar(
-          title: Text(
-            'Digital Monitor',
-            style: Styles.whiteTiny,
-          ),
-          actions: [
-            IconButton(
-                icon: Icon(
-                  Icons.info_outline,
-                  size: 20,
+      child: networkAvailable
+          ? Scaffold(
+              key: _key,
+              appBar: AppBar(
+                title: Text(
+                  'Digital Monitor',
+                  style: Styles.whiteTiny,
                 ),
-                onPressed: _navigateToIntro),
-            IconButton(
-              icon: Icon(
-                Icons.settings,
-                size: 20,
-              ),
-              onPressed: () {
-                themeBloc.changeToRandomTheme();
-              },
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.refresh,
-                size: 20,
-              ),
-              onPressed: () {
-                _refreshData(true);
-              },
-            )
-          ],
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(100),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Text(
-                    widget.user == null ? '' : widget.user.organizationName,
-                    style: Styles.blackBoldSmall,
+                actions: [
+                  IconButton(
+                      icon: Icon(
+                        Icons.info_outline,
+                        size: 20,
+                      ),
+                      onPressed: _navigateToIntro),
+                  IconButton(
+                    icon: Icon(
+                      Icons.settings,
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      themeBloc.changeToRandomTheme();
+                    },
                   ),
-                  SizedBox(
-                    height: 24,
-                  ),
-                  Text(
-                    widget.user == null ? '' : widget.user.name,
-                    style: Styles.whiteBoldSmall,
-                  ),
-                  Text('Field Monitor', style: Styles.whiteTiny),
-                  SizedBox(
-                    height: 8,
-                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.refresh,
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      _refreshData(true);
+                    },
+                  )
                 ],
-              ),
-            ),
-          ),
-        ),
-        backgroundColor: Colors.brown[100],
-        bottomNavigationBar: BottomNavigationBar(
-          items: items,
-          onTap: _handleBottomNav,
-        ),
-        body: isBusy
-            ? Center(
-                child: Container(
-                  height: 48,
-                  width: 48,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 12,
-                    backgroundColor: Colors.black,
-                  ),
-                ),
-              )
-            : Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: GridView.count(
-                      crossAxisCount: 2,
+                bottom: PreferredSize(
+                  preferredSize: Size.fromHeight(100),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
                       children: [
-                        Container(
-                          child: GestureDetector(
-                            onTap: _navigateToProjectList,
-                            child: Card(
-                              color: Colors.brown[50],
-                              elevation: 2,
-                              child: Column(
-                                children: [
-                                  SizedBox(
-                                    height: 48,
-                                  ),
-                                  Text(
-                                    '${_projects.length}',
-                                    style: Styles.blackBoldLarge,
-                                  ),
-                                  SizedBox(
-                                    height: 8,
-                                  ),
-                                  Text(
-                                    'Projects',
-                                    style: Styles.greyLabelSmall,
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
+                        Text(
+                          widget.user == null
+                              ? ''
+                              : widget.user.organizationName,
+                          style: Styles.blackBoldSmall,
                         ),
-                        Container(
-                          child: GestureDetector(
-                            onTap: _navigateToUserList,
-                            child: Card(
-                              color: Colors.brown[50],
-                              elevation: 2,
-                              child: Column(
-                                children: [
-                                  SizedBox(
-                                    height: 48,
-                                  ),
-                                  Text(
-                                    '${_users.length}',
-                                    style: Styles.blackBoldLarge,
-                                  ),
-                                  SizedBox(
-                                    height: 8,
-                                  ),
-                                  Text(
-                                    'Users',
-                                    style: Styles.greyLabelSmall,
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
+                        SizedBox(
+                          height: 24,
                         ),
-                        Container(
-                          child: Card(
-                            elevation: 4,
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: 48,
-                                ),
-                                Text(
-                                  '${_photos.length}',
-                                  style: Styles.blackBoldLarge,
-                                ),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  'Photos',
-                                  style: Styles.greyLabelSmall,
-                                )
-                              ],
-                            ),
-                          ),
+                        Text(
+                          widget.user == null ? '' : widget.user.name,
+                          style: Styles.whiteBoldSmall,
                         ),
-                        Container(
-                          child: Card(
-                            elevation: 4,
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: 48,
-                                ),
-                                Text(
-                                  '${_videos.length}',
-                                  style: Styles.blackBoldLarge,
-                                ),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  'Videos',
-                                  style: Styles.greyLabelSmall,
-                                )
-                              ],
-                            ),
-                          ),
+                        Text('Field Monitor', style: Styles.whiteTiny),
+                        SizedBox(
+                          height: 8,
                         ),
                       ],
                     ),
                   ),
-                ],
+                ),
               ),
-      ),
+              backgroundColor: Colors.brown[100],
+              bottomNavigationBar: BottomNavigationBar(
+                items: items,
+                onTap: _handleBottomNav,
+              ),
+              body: isBusy
+                  ? Center(
+                      child: Container(
+                        height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 6,
+                          backgroundColor: Colors.amber,
+                        ),
+                      ),
+                    )
+                  : Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: GridView.count(
+                            crossAxisCount: 2,
+                            children: [
+                              Container(
+                                child: GestureDetector(
+                                  onTap: _navigateToProjectList,
+                                  child: Card(
+                                    color: Colors.brown[50],
+                                    elevation: 2,
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 48,
+                                        ),
+                                        Text(
+                                          '${_projects.length}',
+                                          style: Styles.blackBoldLarge,
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          'Projects',
+                                          style: Styles.greyLabelSmall,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                child: GestureDetector(
+                                  onTap: _navigateToUserList,
+                                  child: Card(
+                                    color: Colors.brown[50],
+                                    elevation: 2,
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 48,
+                                        ),
+                                        Text(
+                                          '${_users.length}',
+                                          style: Styles.blackBoldLarge,
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          'Users',
+                                          style: Styles.greyLabelSmall,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                child: Card(
+                                  elevation: 4,
+                                  child: Column(
+                                    children: [
+                                      SizedBox(
+                                        height: 48,
+                                      ),
+                                      Text(
+                                        '${_photos.length}',
+                                        style: Styles.blackBoldLarge,
+                                      ),
+                                      SizedBox(
+                                        height: 8,
+                                      ),
+                                      Text(
+                                        'Photos',
+                                        style: Styles.greyLabelSmall,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                child: Card(
+                                  elevation: 4,
+                                  child: Column(
+                                    children: [
+                                      SizedBox(
+                                        height: 48,
+                                      ),
+                                      Text(
+                                        '${_videos.length}',
+                                        style: Styles.blackBoldLarge,
+                                      ),
+                                      SizedBox(
+                                        height: 8,
+                                      ),
+                                      Text(
+                                        'Videos',
+                                        style: Styles.greyLabelSmall,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+            )
+          : Scaffold(
+              key: _key,
+              appBar: AppBar(
+                title: Text('Network Unavailable'),
+              ),
+              body: Center(
+                child: Text(
+                  'No Network Found!',
+                  style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900),
+                ),
+              ),
+            ),
     );
   }
 
@@ -380,14 +430,13 @@ class _DashboardMobileState extends State<DashboardMobile>
         break;
 
       case 1:
-        pp(' 🔆🔆🔆 Navigate to MediaList');
-        _navigateToMediaList();
+        pp(' 🔆🔆🔆 Navigate to ScheduleList');
+        _navigateToScheduleList();
         break;
 
       case 2:
         pp(' 🔆🔆🔆 Navigate to MessageSender');
-        AppSnackbar.showErrorSnackbar(
-            scaffoldKey: _key, message: 'Message sending coming soon!');
+        _navigateToMessageSender();
         break;
     }
   }
@@ -402,6 +451,16 @@ class _DashboardMobileState extends State<DashboardMobile>
             child: ProjectListMain(widget.user)));
   }
 
+  void _navigateToMessageSender() {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: Duration(seconds: 1),
+            child: MessageMain(user: user)));
+  }
+
   void _navigateToMediaList() {
     Navigator.push(
         context,
@@ -410,6 +469,16 @@ class _DashboardMobileState extends State<DashboardMobile>
             alignment: Alignment.topLeft,
             duration: Duration(seconds: 1),
             child: UserMediaListMain(user)));
+  }
+
+  void _navigateToScheduleList() {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.scale,
+            alignment: Alignment.topLeft,
+            duration: Duration(seconds: 1),
+            child: SchedulesListMain()));
   }
 
   void _navigateToIntro() {

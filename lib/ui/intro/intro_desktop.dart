@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:monitorlibrary/data/user.dart';
 
 class IntroDesktop extends StatefulWidget {
-  final User user;
-  IntroDesktop({Key? key, required this.user}) : super(key: key);
+  final User? user;
+  IntroDesktop({Key? key, this.user}) : super(key: key);
   @override
   _IntroDesktopState createState() => _IntroDesktopState();
 }

@@ -187,7 +187,7 @@ class _DashboardMobileState extends State<DashboardMobile>
         if (mounted) {
           pp('DashboardMobile: 🍎 🍎 showUserSnackbar: ${user.name} ... 🍎 🍎');
           _users = await monitorBloc.getOrganizationUsers(
-              organizationId: user!.organizationId!, forceRefresh: false);
+              organizationId: user.organizationId!, forceRefresh: false);
           setState(() {});
           // SpecialSnack.showUserSnackbar(
           //     scaffoldKey: _key, user: user, listener: this);

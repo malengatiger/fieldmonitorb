@@ -72,9 +72,9 @@ class _IntroMainState extends State<IntroMain> {
             ),
           )
         : ScreenTypeLayout(
-            mobile: IntroMobile(user: user!),
-            tablet: IntroTablet(user: user!),
-            desktop: IntroDesktop(user: user!),
+            mobile: IntroMobile(user: user),
+            tablet: IntroTablet(user: user),
+            desktop: IntroDesktop(user: user),
           );
   }
 }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:monitorlibrary/data/user.dart';
 
 class IntroTablet extends StatefulWidget {
-  final User user;
-  IntroTablet({Key key, this.user}) : super(key: key);
+  final User? user;
+  IntroTablet({Key? key, this.user}) : super(key: key);
 
   @override
   _IntroTabletState createState() => _IntroTabletState();
@@ -11,7 +11,7 @@ class IntroTablet extends StatefulWidget {
 
 class _IntroTabletState extends State<IntroTablet>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
 
   @override
   void initState() {

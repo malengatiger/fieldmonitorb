@@ -3,14 +3,14 @@ import 'package:monitorlibrary/data/user.dart';
 
 class IntroDesktop extends StatefulWidget {
   final User user;
-  IntroDesktop({Key key, this.user}) : super(key: key);
+  IntroDesktop({Key? key, required this.user}) : super(key: key);
   @override
   _IntroDesktopState createState() => _IntroDesktopState();
 }
 
 class _IntroDesktopState extends State<IntroDesktop>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
 
   @override
   void initState() {

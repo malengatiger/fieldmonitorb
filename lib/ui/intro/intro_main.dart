@@ -11,8 +11,8 @@ import 'intro_mobile.dart';
 import 'intro_tablet.dart';
 
 class IntroMain extends StatefulWidget {
-  final User user;
-  IntroMain({Key key, this.user}) : super(key: key);
+  final User? user;
+  IntroMain({Key? key, this.user}) : super(key: key);
 
   @override
   _IntroMainState createState() => _IntroMainState();
@@ -21,15 +21,13 @@ class IntroMain extends StatefulWidget {
 /// Main Widget that manages a responsive layout for intro pages
 class _IntroMainState extends State<IntroMain> {
   var isBusy = false;
-  User user;
+  User? user;
   @override
   void initState() {
     super.initState();
-    if (widget.user == null) {
-      _checkUser();
-    } else {
+
       user = widget.user;
-    }
+
   }
 
   void _checkUser() async {
@@ -46,7 +44,7 @@ class _IntroMainState extends State<IntroMain> {
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: Duration(seconds: 1),
-              child: DashboardMain(user: user)));
+              child: DashboardMain(user: user!)));
     }
     setState(() {
       isBusy = false;
@@ -74,9 +72,9 @@ class _IntroMainState extends State<IntroMain> {
             ),
           )
         : ScreenTypeLayout(
-            mobile: IntroMobile(user: user),
-            tablet: IntroTablet(user: user),
-            desktop: IntroDesktop(user: user),
+            mobile: IntroMobile(user: user!),
+            tablet: IntroTablet(user: user!),
+            desktop: IntroDesktop(user: user!),
           );
   }
 }

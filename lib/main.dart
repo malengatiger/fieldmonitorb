@@ -10,7 +10,7 @@ import 'package:monitorlibrary/functions.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DotEnv.load(fileName: ".env");
+  await DotEnv.dotenv.load(fileName: ".env");
 
   await Firebase.initializeApp();
   // Set the background messaging handler early on, as a named top-level function
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
           pp('🌸 🌸 default theme for the app, index: ${themeBloc.themeIndex}');
           if (snapshot.hasData) {
             pp('🌸 🌸 🌸 🌸 🌸 Setting theme for the app, index: 🌸 ${snapshot.data}');
-            theme = themeBloc.getTheme(snapshot.data);
+            theme = themeBloc.getTheme(snapshot.data!);
           }
           return MaterialApp(
             debugShowCheckedModeBanner: false,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
 import 'package:monitorlibrary/auth/app_auth.dart';
 import 'package:monitorlibrary/data/user.dart';
 import 'package:monitorlibrary/functions.dart';
@@ -12,7 +12,7 @@ class SigninMobile extends StatefulWidget {
 
 class _SigninMobileState extends State<SigninMobile>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
 
   @override
   void dispose() {
@@ -134,7 +134,7 @@ class _SigninMobileState extends State<SigninMobile>
   }
 
   void _checkStatus() async {
-    var status = env['status'];
+    var status = dot.dotenv.env['status'];
     pp('🥦🥦 Checking status ..... 🥦🥦 $status 🌸 🌸 🌸');
     if (status == 'dev') {
       emailCntr.text = 'jane@orga.com';

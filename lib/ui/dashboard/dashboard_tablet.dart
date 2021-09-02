@@ -3,7 +3,7 @@ import 'package:monitorlibrary/data/user.dart';
 
 class DashboardTablet extends StatefulWidget {
   final User user;
-  DashboardTablet({Key key, this.user}) : super(key: key);
+  DashboardTablet({Key? key, required this.user}) : super(key: key);
 
   @override
   _DashboardTabletState createState() => _DashboardTabletState();
@@ -11,7 +11,7 @@ class DashboardTablet extends StatefulWidget {
 
 class _DashboardTabletState extends State<DashboardTablet>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
 
   @override
   void initState() {

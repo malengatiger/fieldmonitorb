@@ -9,21 +9,21 @@ import 'package:monitorlibrary/snack.dart';
 import 'package:page_transition/page_transition.dart';
 
 class IntroMobile extends StatefulWidget {
-  final User user;
-  IntroMobile({Key key, this.user}) : super(key: key);
+  final User? user;
+  IntroMobile({Key? key, this.user}) : super(key: key);
   @override
   _IntroMobileState createState() => _IntroMobileState();
 }
 
 class _IntroMobileState extends State<IntroMobile>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  User user;
+  late AnimationController _controller;
+  User? user;
   var lorem =
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac sagittis lectus. Aliquam dictum elementum massa, '
       'eget mollis elit rhoncus ut.';
 
-  var mList = List<PageViewModel>();
+  var mList = <PageViewModel>[];
   void _buildPages(BuildContext context) {
     var page1 = PageViewModel(
       titleWidget: Text(
@@ -119,7 +119,7 @@ class _IntroMobileState extends State<IntroMobile>
                           ),
                         ],
                       )
-                    : Text(user.name),
+                    : Text('${user == null? '' : user!.name!}'),
                 SizedBox(
                   height: 16,
                 )
@@ -170,7 +170,7 @@ class _IntroMobileState extends State<IntroMobile>
               type: PageTransitionType.scale,
               alignment: Alignment.topLeft,
               duration: Duration(seconds: 1),
-              child: DashboardMain(user: user)));
+              child: DashboardMain(user: user!)));
     } else {
       pp('User is null,  🔆 🔆 🔆 🔆 cannot navigate to Dashboard');
     }

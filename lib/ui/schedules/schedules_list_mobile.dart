@@ -14,8 +14,8 @@ class SchedulesListMobile extends StatefulWidget {
 
 class _SchedulesListMobileState extends State<SchedulesListMobile>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  User _user;
+  late AnimationController _controller;
+  User? _user;
   List<FieldMonitorSchedule> _schedules = [];
   bool busy = false;
   var _key = GlobalKey<ScaffoldState>();
@@ -40,7 +40,7 @@ class _SchedulesListMobileState extends State<SchedulesListMobile>
     try {
       _user = await Prefs.getUser();
       _schedules = await monitorBloc.getMonitorFieldMonitorSchedules(
-          userId: _user.userId, forceRefresh: refresh);
+          userId: _user!.userId!, forceRefresh: refresh);
     } catch (e) {
       AppSnackbar.showErrorSnackbar(
           scaffoldKey: _key, message: 'Data refresh failed: $e');
@@ -92,7 +92,7 @@ class _SchedulesListMobileState extends State<SchedulesListMobile>
                     child: Column(
                       children: [
                         Text(
-                          '${_user == null ? '' : _user.name},',
+                          '${_user == null ? '' : _user!.name},',
                           style: Styles.whiteBoldMedium,
                         ),
                         SizedBox(
@@ -129,7 +129,7 @@ class _SchedulesListMobileState extends State<SchedulesListMobile>
                               height: 0,
                             ),
                             Text(getFormattedDateLongWithTime(
-                                sched.date, context)),
+                                sched.date!, context)),
                             SizedBox(
                               height: 20,
                             ),
@@ -144,13 +144,13 @@ class _SchedulesListMobileState extends State<SchedulesListMobile>
 
   String _getSubTitle(FieldMonitorSchedule sc) {
     var string = 'time(s) per Day';
-    if (sc.perDay > 0) {
+    if (sc.perDay! > 0) {
       return '${sc.perDay} $string';
     }
-    if (sc.perWeek > 0) {
+    if (sc.perWeek! > 0) {
       return '${sc.perWeek} time(s) per Week';
     }
-    if (sc.perMonth > 0) {
+    if (sc.perMonth! > 0) {
       return '${sc.perMonth} time(s) per Month';
     }
     return '';

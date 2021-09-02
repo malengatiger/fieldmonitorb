@@ -7,7 +7,7 @@ class SigninDesktop extends StatefulWidget {
 
 class _SigninDesktopState extends State<SigninDesktop>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
 
   @override
   void initState() {

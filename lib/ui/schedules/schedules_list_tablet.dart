@@ -14,8 +14,8 @@ class SchedulesListTablet extends StatefulWidget {
 
 class _SchedulesListTabletState extends State<SchedulesListTablet>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  User _user;
+  late AnimationController _controller;
+  User? _user;
   List<FieldMonitorSchedule> _schedules = [];
   bool busy = false;
   var _key = GlobalKey<ScaffoldState>();
@@ -40,7 +40,7 @@ class _SchedulesListTabletState extends State<SchedulesListTablet>
     try {
       _user = await Prefs.getUser();
       _schedules = await monitorBloc.getMonitorFieldMonitorSchedules(
-          userId: _user.userId, forceRefresh: refresh);
+          userId: _user!.userId!, forceRefresh: refresh);
     } catch (e) {
       AppSnackbar.showErrorSnackbar(
           scaffoldKey: _key, message: 'Data refresh failed: $e');
@@ -82,7 +82,7 @@ class _SchedulesListTabletState extends State<SchedulesListTablet>
                     child: Column(
                       children: [
                         Text(
-                          '${_user == null ? '' : _user.name},',
+                          '${_user == null ? '' : _user!.name!},',
                           style: Styles.whiteBoldMedium,
                         ),
                         SizedBox(
@@ -117,7 +117,7 @@ class _SchedulesListTabletState extends State<SchedulesListTablet>
                             height: 12,
                           ),
                           Text(getFormattedDateLongWithTime(
-                              sched.date, context)),
+                              sched.date!, context)),
                         ],
                       ),
                     );
@@ -128,13 +128,13 @@ class _SchedulesListTabletState extends State<SchedulesListTablet>
 
   String _getSubTitle(FieldMonitorSchedule sc) {
     var string = 'time(s) per Day';
-    if (sc.perDay > 0) {
+    if (sc.perDay! > 0) {
       return '${sc.perDay} $string';
     }
-    if (sc.perWeek > 0) {
+    if (sc.perWeek! > 0) {
       return '${sc.perWeek} time(s) per Week';
     }
-    if (sc.perMonth > 0) {
+    if (sc.perMonth! > 0) {
       return '${sc.perMonth} time(s) per Month';
     }
     return '';

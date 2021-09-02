@@ -18,30 +18,28 @@ import 'package:monitorlibrary/ui/media/user_media_list/user_media_list_main.dar
 import 'package:monitorlibrary/ui/message/message_main.dart';
 import 'package:monitorlibrary/ui/project_list/project_list_main.dart';
 import 'package:monitorlibrary/users/list/user_list_main.dart';
-import 'package:monitorlibrary/users/special_snack.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 class DashboardMobile extends StatefulWidget {
   final mon.User user;
-  DashboardMobile({Key key, this.user}) : super(key: key);
+  DashboardMobile({Key? key, required this.user}) : super(key: key);
 
   @override
   _DashboardMobileState createState() => _DashboardMobileState();
 }
 
 class _DashboardMobileState extends State<DashboardMobile>
-    with SingleTickerProviderStateMixin
-    implements SpecialSnackListener {
-  AnimationController _controller;
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
   var isBusy = false;
   var _projects = <Project>[];
   var _users = <mon.User>[];
   var _photos = <Photo>[];
   var _videos = <Video>[];
-  User user;
+  User? user;
 
-  StreamSubscription<ConnectivityResult> subscription;
+  late StreamSubscription<ConnectivityResult> subscription;
 
   static const nn = 'DashboardMobile:  😡 😡 ';
   bool networkAvailable = false;
@@ -150,8 +148,8 @@ class _DashboardMobileState extends State<DashboardMobile>
     try {
       user = await Prefs.getUser();
       await monitorBloc.refreshUserData(
-          userId: user.userId,
-          organizationId: user.organizationId,
+          userId: user!.userId!,
+          organizationId: user!.organizationId!,
           forceRefresh: forceRefresh);
     } catch (e) {
       print(e);
@@ -174,14 +172,14 @@ class _DashboardMobileState extends State<DashboardMobile>
         if (mounted) {
           pp('DashboardMobile: 🍎 🍎 showProjectSnackbar: ${project.name} ... 🍎 🍎');
           _projects = await monitorBloc.getOrganizationProjects(
-              organizationId: user.organizationId, forceRefresh: false);
+              organizationId: user!.organizationId!, forceRefresh: false);
           setState(() {});
-          SpecialSnack.showProjectSnackbar(
-              scaffoldKey: _key,
-              textColor: Colors.white,
-              backgroundColor: Theme.of(context).primaryColor,
-              project: project,
-              listener: this);
+          // SpecialSnack.showProjectSnackbar(
+          //     scaffoldKey: _key,
+          //     textColor: Colors.white,
+          //     backgroundColor: Theme.of(context).primaryColor,
+          //     project: project,
+          //     listener: this);
         }
       });
 
@@ -189,10 +187,10 @@ class _DashboardMobileState extends State<DashboardMobile>
         if (mounted) {
           pp('DashboardMobile: 🍎 🍎 showUserSnackbar: ${user.name} ... 🍎 🍎');
           _users = await monitorBloc.getOrganizationUsers(
-              organizationId: user.organizationId, forceRefresh: false);
+              organizationId: user!.organizationId!, forceRefresh: false);
           setState(() {});
-          SpecialSnack.showUserSnackbar(
-              scaffoldKey: _key, user: user, listener: this);
+          // SpecialSnack.showUserSnackbar(
+          //     scaffoldKey: _key, user: user, listener: this);
         }
       });
 
@@ -200,8 +198,8 @@ class _DashboardMobileState extends State<DashboardMobile>
         if (mounted) {
           pp('DashboardMobile: 🍎 🍎 showMessageSnackbar: ${message.message} ... 🍎 🍎');
 
-          SpecialSnack.showMessageSnackbar(
-              scaffoldKey: _key, message: message, listener: this);
+          // SpecialSnack.showMessageSnackbar(
+          //     scaffoldKey: _key, message: message, listener: this);
         }
       });
     } else {
@@ -255,14 +253,14 @@ class _DashboardMobileState extends State<DashboardMobile>
                         Text(
                           widget.user == null
                               ? ''
-                              : widget.user.organizationName,
+                              : widget.user.organizationName!,
                           style: Styles.blackBoldSmall,
                         ),
                         SizedBox(
                           height: 24,
                         ),
                         Text(
-                          widget.user == null ? '' : widget.user.name,
+                          widget.user == null ? '' : widget.user.name!,
                           style: Styles.whiteBoldSmall,
                         ),
                         Text('Field Monitor', style: Styles.whiteTiny),
@@ -458,7 +456,7 @@ class _DashboardMobileState extends State<DashboardMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: Duration(seconds: 1),
-            child: MessageMain(user: user)));
+            child: MessageMain(user: user!)));
   }
 
   void _navigateToMediaList() {
@@ -468,7 +466,7 @@ class _DashboardMobileState extends State<DashboardMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: Duration(seconds: 1),
-            child: UserMediaListMain(user)));
+            child: UserMediaListMain(user!)));
   }
 
   void _navigateToScheduleList() {
@@ -503,8 +501,5 @@ class _DashboardMobileState extends State<DashboardMobile>
             child: UserListMain()));
   }
 
-  @override
-  onClose() {
-    ScaffoldMessenger.of(_key.currentState.context).removeCurrentSnackBar();
-  }
+
 }

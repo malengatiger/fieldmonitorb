@@ -25,31 +25,11 @@ class _IntroMainState extends State<IntroMain> {
   @override
   void initState() {
     super.initState();
-
       user = widget.user;
 
   }
 
-  void _checkUser() async {
-    pp('IntroMain: 🎽 🎽 🎽 Checking the user ....');
-    setState(() {
-      isBusy = true;
-    });
-    user = await AppAuth.isUserSignedIn();
-    if (user != null && user is User) {
-      Navigator.pop(context);
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.scale,
-              alignment: Alignment.topLeft,
-              duration: Duration(seconds: 1),
-              child: DashboardMain(user: user!)));
-    }
-    setState(() {
-      isBusy = false;
-    });
-  }
+
 
   @override
   Widget build(BuildContext context) {

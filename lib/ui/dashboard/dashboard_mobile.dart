@@ -141,13 +141,13 @@ class _DashboardMobileState extends State<DashboardMobile>
   }
 
   void _refreshData(bool forceRefresh) async {
-    pp('Refresh data ....');
+    pp('$mm ............... Refresh data ....');
     setState(() {
       isBusy = true;
     });
     try {
       user = await Prefs.getUser();
-      await monitorBloc.refreshUserData(
+      monitorBloc.refreshUserData(
           userId: user!.userId!,
           organizationId: user!.organizationId!,
           forceRefresh: forceRefresh);
@@ -167,7 +167,6 @@ class _DashboardMobileState extends State<DashboardMobile>
 
     if (android || ios) {
       pp('DashboardMobile: 🍎 🍎 _listen to FCM message streams ... 🍎 🍎');
-
       fcmBloc.projectStream.listen((Project project) async {
         if (mounted) {
           pp('DashboardMobile: 🍎 🍎 showProjectSnackbar: ${project.name} ... 🍎 🍎');
@@ -456,7 +455,7 @@ class _DashboardMobileState extends State<DashboardMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: Duration(seconds: 1),
-            child: MessageMain(user: user!)));
+            child: MessageMain(user: user)));
   }
 
   void _navigateToMediaList() {

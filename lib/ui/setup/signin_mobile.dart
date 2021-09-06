@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as dot;
+import 'package:monitorlibrary/api/sharedprefs.dart';
 import 'package:monitorlibrary/auth/app_auth.dart';
 import 'package:monitorlibrary/data/user.dart';
 import 'package:monitorlibrary/functions.dart';
@@ -137,7 +138,7 @@ class _SigninMobileState extends State<SigninMobile>
     var status = dot.dotenv.env['status'];
     pp('🥦🥦 Checking status ..... 🥦🥦 $status 🌸 🌸 🌸');
     if (status == 'dev') {
-      emailCntr.text = 'jane@orga.com';
+      emailCntr.text = 'monitor.dwt@monitor.com';
       pswdCntr.text = 'pass123';
     }
     setState(() {});
@@ -164,6 +165,8 @@ class _SigninMobileState extends State<SigninMobile>
     });
     try {
       var user = await AppAuth.signIn(email, password, FIELD_MONITOR);
+      await Prefs.saveUser(user);
+      pp('User has been saved');
       Navigator.pop(context, user);
     } catch (e) {
       setState(() {

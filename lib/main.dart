@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
+import 'package:monitorlibrary/api/local_mongo.dart';
 import 'package:monitorlibrary/bloc/fcm_bloc.dart';
 import 'package:monitorlibrary/bloc/theme_bloc.dart';
 import 'package:monitorlibrary/functions.dart';
@@ -11,7 +12,6 @@ import 'package:monitorlibrary/functions.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DotEnv.dotenv.load(fileName: ".env");
-
   await Firebase.initializeApp();
   // Set the background messaging handler early on, as a named top-level function
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
@@ -24,7 +24,6 @@ void main() async {
   //     .resolvePlatformSpecificImplementation<
   //         AndroidFlutterLocalNotificationsPlugin>()
   //     ?.createNotificationChannel(channel);
-
   /// Update the iOS foreground notification presentation options to allow
   /// heads up notifications.
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
@@ -33,7 +32,7 @@ void main() async {
     sound: true,
   );
 
-  pp('🥦🥦🥦🥦🥦 Firebase has been initialized 🥦🥦🥦🥦');
+  pp('🥦🥦🥦🥦🥦 Firebase core and messaging has been initialized 🥦🥦🥦🥦');
   runApp(MyApp());
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 }

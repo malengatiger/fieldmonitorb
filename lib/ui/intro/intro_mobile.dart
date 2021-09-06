@@ -3,9 +3,9 @@ import 'package:fieldmonitor3/ui/setup/signin_mobile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:monitorlibrary/auth/app_auth.dart';
 import 'package:monitorlibrary/data/user.dart';
 import 'package:monitorlibrary/functions.dart';
-import 'package:monitorlibrary/snack.dart';
 import 'package:page_transition/page_transition.dart';
 
 class IntroMobile extends StatefulWidget {
@@ -77,6 +77,25 @@ class _IntroMobileState extends State<IntroMobile>
     _controller = AnimationController(vsync: this);
     super.initState();
     user = widget.user;
+    _checkUser();
+  }
+
+  void _checkUser() async {
+    pp('IntroMain: 🎽 🎽 🎽 Checking the user ....');
+    setState(() {
+      isBusy = true;
+    });
+    if (user != null) {
+      _navigateToDashboard();
+    } else {
+      user = await AppAuth.isUserSignedIn();
+      if (user != null && user is User) {
+        _navigateToDashboard();
+      }
+    }
+    setState(() {
+      isBusy = false;
+    });
   }
 
   @override
@@ -164,6 +183,7 @@ class _IntroMobileState extends State<IntroMobile>
 
   void _navigateToDashboard() {
     if (user != null) {
+      Navigator.pop(context);
       Navigator.push(
           context,
           PageTransition(
@@ -186,19 +206,16 @@ class _IntroMobileState extends State<IntroMobile>
             child: SigninMobile()));
 
     if (result is User) {
-      pp(' 👌👌👌 Returned from sign in :  👌👌👌 ${result.toJson()}');
+      pp(' 👌👌👌 Returned from sign in; will navigate to Dashboard :  👌👌👌 ${result.toJson()}');
       setState(() {
         user = result;
       });
-      AppSnackbar.showSnackbar(
-          scaffoldKey: _key,
-          message: 'Sign in OK',
-          textColor: Colors.white,
-          backgroundColor: Theme.of(context).primaryColor);
+      _navigateToDashboard();
     } else {
       pp(' 😡  😡  Returned from sign in is NOT a user :  😡 $result');
     }
   }
 
   var _key = GlobalKey<ScaffoldState>();
+
 }

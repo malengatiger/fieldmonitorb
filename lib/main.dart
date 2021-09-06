@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 import 'package:monitorlibrary/api/local_mongo.dart';
+import 'package:monitorlibrary/api/sharedprefs.dart';
 import 'package:monitorlibrary/bloc/fcm_bloc.dart';
 import 'package:monitorlibrary/bloc/theme_bloc.dart';
 import 'package:monitorlibrary/functions.dart';
 
+int mThemeIndex = 0;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DotEnv.dotenv.load(fileName: ".env");
@@ -33,6 +35,8 @@ void main() async {
   );
 
   pp('🥦🥦🥦🥦🥦 Firebase core and messaging has been initialized 🥦🥦🥦🥦');
+  mThemeIndex = await Prefs.getThemeIndex();
+  pp('🥦🥦🥦🥦🥦 current mThemeIndex: $mThemeIndex 🥦🥦🥦🥦');
   runApp(MyApp());
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 }
@@ -44,16 +48,14 @@ class MyApp extends StatelessWidget {
     return StreamBuilder<int>(
         stream: themeBloc.newThemeStream,
         builder: (context, snapshot) {
-          ThemeData theme = themeBloc.getCurrentTheme();
-          pp('🌸 🌸 default theme for the app, index: ${themeBloc.themeIndex}');
           if (snapshot.hasData) {
-            pp('🌸 🌸 🌸 🌸 🌸 Setting theme for the app, index: 🌸 ${snapshot.data}');
-            theme = themeBloc.getTheme(snapshot.data!);
+            pp('🥦🥦🥦🥦🥦  Setting theme for the app, index: 🌸 ${snapshot.data}');
+            mThemeIndex = snapshot.data!;
           }
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Field Monitor',
-            theme: theme,
+            theme: ThemeUtil.getTheme(themeIndex: mThemeIndex),
             home: IntroMain(),
           );
         });

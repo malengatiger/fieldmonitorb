@@ -21,7 +21,7 @@ import java.util.*
 class MainActivity : FlutterActivity() {
     private val channelImage = "com.boha.image.channel"
     private val channelVideo = "com.boha.video.channel"
-    private val tag = "\uD83C\uDF38 BadLands"
+    private val tag = "\uD83C\uDF38 \uD83C\uDF38 \uD83C\uDF38 BadLands \uD83C\uDF38:"
 
     private lateinit var imageChannelResult: MethodChannel.Result
     private lateinit var videoChannelResult: MethodChannel.Result

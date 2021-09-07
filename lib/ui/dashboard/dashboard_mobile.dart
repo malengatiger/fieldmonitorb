@@ -17,6 +17,7 @@ import 'package:monitorlibrary/snack.dart';
 import 'package:monitorlibrary/ui/media/user_media_list/user_media_list_main.dart';
 import 'package:monitorlibrary/ui/message/message_main.dart';
 import 'package:monitorlibrary/ui/project_list/project_list_main.dart';
+import 'package:monitorlibrary/ui/project_list/project_list_mobile.dart';
 import 'package:monitorlibrary/users/list/user_list_main.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -445,7 +446,7 @@ class _DashboardMobileState extends State<DashboardMobile>
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: Duration(seconds: 1),
-            child: ProjectListMain(widget.user)));
+            child: ProjectListMobile(widget.user)));
   }
 
   void _navigateToMessageSender() {

@@ -27,9 +27,9 @@ class _IntroMobileState extends State<IntroMobile>
   void _buildPages(BuildContext context) {
     var page1 = PageViewModel(
       titleWidget: Text(
-        "Welcome to The Visual Monitor",
+        "Welcome to The Digital Monitor",
         style: TextStyle(
-            fontSize: Styles.medium, color: Theme.of(context).primaryColor),
+            fontSize: Styles.medium, color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
       ),
       bodyWidget: Text(
         "$lorem",
@@ -44,7 +44,7 @@ class _IntroMobileState extends State<IntroMobile>
       titleWidget: Text(
         "Field Monitors are people too",
         style: TextStyle(
-            fontSize: Styles.medium, color: Theme.of(context).primaryColor),
+            fontSize: Styles.medium, color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
       ),
       bodyWidget: Text(
         "$lorem",
@@ -54,9 +54,9 @@ class _IntroMobileState extends State<IntroMobile>
     );
     var page3 = PageViewModel(
       titleWidget: Text(
-        "Thank you for using VisualMonitor",
+        "Start using The Digital Monitor",
         style: TextStyle(
-            fontSize: Styles.medium, color: Theme.of(context).primaryColor),
+            fontSize: Styles.medium, color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
       ),
       bodyWidget: Text(
         "$lorem",
@@ -75,8 +75,9 @@ class _IntroMobileState extends State<IntroMobile>
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
-    super.initState();
     user = widget.user;
+    super.initState();
+
   }
 
   @override
@@ -94,7 +95,9 @@ class _IntroMobileState extends State<IntroMobile>
       child: Scaffold(
         key: _key,
         appBar: AppBar(
-          leading: Container(),
+          leading: widget.user == null? IconButton(icon: Icon(Icons.arrow_back_ios), onPressed: () {
+            Navigator.pop(context);
+          },) : Container(),
           title: Text(
             'The Digital Monitor Platform',
             style: Styles.whiteSmall,
@@ -119,9 +122,9 @@ class _IntroMobileState extends State<IntroMobile>
                           ),
                         ],
                       )
-                    : Text('${user == null? '' : user!.name!}'),
+                    : Text('${user == null? '' : user!.name!}', style: Styles.blackBoldMedium,),
                 SizedBox(
-                  height: 16,
+                  height: 24,
                 )
               ],
             ),

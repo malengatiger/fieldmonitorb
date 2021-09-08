@@ -245,7 +245,7 @@ class _DashboardMobileState extends State<DashboardMobile>
                   )
                 ],
                 bottom: PreferredSize(
-                  preferredSize: Size.fromHeight(100),
+                  preferredSize: Size.fromHeight(140),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -261,11 +261,11 @@ class _DashboardMobileState extends State<DashboardMobile>
                         ),
                         Text(
                           widget.user == null ? '' : widget.user.name!,
-                          style: Styles.whiteBoldSmall,
+                          style: Styles.whiteBoldMedium,
                         ),
                         Text('Field Monitor', style: Styles.whiteTiny),
                         SizedBox(
-                          height: 8,
+                          height: 20,
                         ),
                       ],
                     ),

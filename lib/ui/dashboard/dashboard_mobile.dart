@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:fieldmonitor3/ui/intro/intro_main.dart';
+import 'package:fieldmonitor3/ui/intro/intro_mobile.dart';
 import 'package:fieldmonitor3/ui/schedules/schedules_list_main.dart';
 import 'package:flutter/material.dart';
 import 'package:monitorlibrary/api/sharedprefs.dart';
@@ -210,8 +211,7 @@ class _DashboardMobileState extends State<DashboardMobile>
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: networkAvailable
-          ? Scaffold(
+      child: Scaffold(
               key: _key,
               appBar: AppBar(
                 title: Text(
@@ -351,7 +351,7 @@ class _DashboardMobileState extends State<DashboardMobile>
                               ),
                               Container(
                                 child: Card(
-                                  elevation: 4,
+                                  elevation: 1,
                                   child: Column(
                                     children: [
                                       SizedBox(
@@ -374,7 +374,7 @@ class _DashboardMobileState extends State<DashboardMobile>
                               ),
                               Container(
                                 child: Card(
-                                  elevation: 4,
+                                  elevation: 1,
                                   child: Column(
                                     children: [
                                       SizedBox(
@@ -401,21 +401,7 @@ class _DashboardMobileState extends State<DashboardMobile>
                       ],
                     ),
             )
-          : Scaffold(
-              key: _key,
-              appBar: AppBar(
-                title: Text('Network Unavailable'),
-              ),
-              body: Center(
-                child: Text(
-                  'No Network Found!',
-                  style: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900),
-                ),
-              ),
-            ),
+
     );
   }
 
@@ -480,13 +466,14 @@ class _DashboardMobileState extends State<DashboardMobile>
   }
 
   void _navigateToIntro() {
+    pp('$mm _navigateToIntro to Intro ....');
     Navigator.push(
         context,
         PageTransition(
             type: PageTransitionType.scale,
             alignment: Alignment.topLeft,
             duration: Duration(seconds: 1),
-            child: IntroMain(
+            child: IntroMobile(
               user: widget.user,
             )));
   }

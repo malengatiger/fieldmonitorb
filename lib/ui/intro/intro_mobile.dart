@@ -77,25 +77,6 @@ class _IntroMobileState extends State<IntroMobile>
     _controller = AnimationController(vsync: this);
     super.initState();
     user = widget.user;
-    _checkUser();
-  }
-
-  void _checkUser() async {
-    pp('IntroMain: 🎽 🎽 🎽 Checking the user ....');
-    setState(() {
-      isBusy = true;
-    });
-    if (user != null) {
-      _navigateToDashboard();
-    } else {
-      user = await AppAuth.isUserSignedIn();
-      if (user != null && user is User) {
-        _navigateToDashboard();
-      }
-    }
-    setState(() {
-      isBusy = false;
-    });
   }
 
   @override

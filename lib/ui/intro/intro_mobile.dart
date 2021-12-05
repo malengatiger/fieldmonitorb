@@ -3,6 +3,7 @@ import 'package:fieldmonitor3/ui/setup/signin_mobile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:monitorlibrary/api/sharedprefs.dart';
 import 'package:monitorlibrary/auth/app_auth.dart';
 import 'package:monitorlibrary/data/user.dart';
 import 'package:monitorlibrary/functions.dart';
@@ -77,7 +78,16 @@ class _IntroMobileState extends State<IntroMobile>
     _controller = AnimationController(vsync: this);
     user = widget.user;
     super.initState();
+    _getUser();
 
+  }
+  void _getUser() async {
+    if (widget.user == null) {
+      user = await Prefs.getUser();
+      if (user != null) {
+        _navigateToDashboard();
+      }
+    }
   }
 
   @override

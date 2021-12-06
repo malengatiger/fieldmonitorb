@@ -10,11 +10,15 @@ import 'package:monitorlibrary/bloc/fcm_bloc.dart';
 import 'package:monitorlibrary/bloc/theme_bloc.dart';
 import 'package:monitorlibrary/functions.dart';
 
+import 'geofence/geofencer_one.dart';
+import 'geofence/geofencer_two.dart';
+
 int mThemeIndex = 0;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DotEnv.dotenv.load(fileName: ".env");
   await Firebase.initializeApp();
+  await geofencerTwo.initialize();
   // Set the background messaging handler early on, as a named top-level function
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 

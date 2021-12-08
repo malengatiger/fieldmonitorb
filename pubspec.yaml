@@ -11,8 +11,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_geofence: ^0.4.1
-  geofence_service: ^3.4.4
   monitorlibrary:
     path: ../new-monitor-repo/monitorlibrary
 

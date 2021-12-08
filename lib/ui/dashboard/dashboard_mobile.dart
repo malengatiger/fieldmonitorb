@@ -1,9 +1,6 @@
 import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
-import 'package:fieldmonitor3/geofence/geofencer_one.dart';
-import 'package:fieldmonitor3/geofence/geofencer_two.dart';
-import 'package:fieldmonitor3/ui/intro/intro_main.dart';
 import 'package:fieldmonitor3/ui/intro/intro_mobile.dart';
 import 'package:fieldmonitor3/ui/schedules/schedules_list_main.dart';
 import 'package:flutter/material.dart';
@@ -17,10 +14,10 @@ import 'package:monitorlibrary/data/user.dart' as mon;
 import 'package:monitorlibrary/data/user.dart';
 import 'package:monitorlibrary/functions.dart';
 import 'package:monitorlibrary/generic_functions.dart';
+import 'package:monitorlibrary/geofence/geofencer_two.dart';
 import 'package:monitorlibrary/snack.dart';
 import 'package:monitorlibrary/ui/media/user_media_list/user_media_list_main.dart';
 import 'package:monitorlibrary/ui/message/message_main.dart';
-import 'package:monitorlibrary/ui/project_list/project_list_main.dart';
 import 'package:monitorlibrary/ui/project_list/project_list_mobile.dart';
 import 'package:monitorlibrary/users/list/user_list_main.dart';
 import 'package:page_transition/page_transition.dart';

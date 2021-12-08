@@ -4,14 +4,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
-import 'package:monitorlibrary/api/local_mongo.dart';
 import 'package:monitorlibrary/api/sharedprefs.dart';
 import 'package:monitorlibrary/bloc/fcm_bloc.dart';
 import 'package:monitorlibrary/bloc/theme_bloc.dart';
 import 'package:monitorlibrary/functions.dart';
+import 'package:monitorlibrary/geofence/geofencer_two.dart';
 
-import 'geofence/geofencer_one.dart';
-import 'geofence/geofencer_two.dart';
 
 int mThemeIndex = 0;
 void main() async {
